@@ -52,25 +52,21 @@ Enable the cron refresh (user crontab only, nothing system-wide):
 crontab -e    # then paste the line from deploy/crontab.example
 ```
 
-## Hosting (step 2 — public)
+## Hosting — LIVE ✅
 
-The university box has no web server and you have no admin rights — good news:
-you don't need either. The site is fully static, so the recommended setup is:
-
-1. Create a GitHub repository (e.g. `zingst-weather`), push this folder.
-2. In the repo settings enable **GitHub Pages**, source: branch `main`,
-   folder `/docs` (or use a `docs/` symlink / Actions workflow).
-3. Uncomment the git block in `deploy/update.sh` — the cron job then pushes
-   fresh JSON every 5 minutes and Pages serves it worldwide, HTTPS included,
-   for free. Use a fine-grained deploy token limited to that one repo.
-4. Optional: a friendly domain (e.g. `wetter-zingst.de`) via CNAME.
+- **Site**: https://franzflink.github.io/zingst-weather/
+- **Repo**: https://github.com/FranzFlink/zingst-weather (public — GitHub Pages
+  on the free plan requires it; source: branch `main`, folder `/docs`)
+- A user cron job on barat runs `deploy/update.sh` every 5 minutes:
+  rebuild JSON → commit → push; Pages redeploys automatically (~1 min).
+  Inspect with `crontab -l`, remove via `crontab -e`. Log: `logs/update.log`.
+- GitHub auth: `gh` CLI in `~/.local/bin/gh` (account FranzFlink), git pushes
+  use its credential helper — no tokens stored in the repo.
+- Optional next step: a friendly domain (e.g. `wetter-zingst.de`) via CNAME.
 
 Nothing listens on the university server, no ports are opened, only outbound
-`git push` — indistinguishable from normal developer activity. Cloudflare
-Pages / Netlify work identically if preferred.
-
-**Before going public**, get an OK from the institute (data policy / Impressum /
-who is named as operator), and swap in the official logos.
+`git push`. The vendor manuals (PDFs) are gitignored on purpose — they are
+copyrighted and don't belong in a public repo.
 
 ## Open points
 
@@ -83,10 +79,8 @@ who is named as operator), and swap in the official logos.
       before showing it on the dashboard.
 - [x] **Logos**: official files in `docs/assets/logo-lim.png` /
       `logo-uni-leipzig.png`, linked to the institute / university websites.
-- [ ] **Impressum**: `docs/impressum.html` — fill in the two highlighted
-      placeholders (full name of the person responsible for content; hosting
-      provider in the privacy section once hosting is live) and ideally have it
-      checked against the university's Impressum template.
+- [x] **Impressum**: filled (responsible person, GitHub Pages privacy entry) —
+      still worth cross-checking against the university's Impressum template.
 - [ ] **Anemometer height**: the site says "ca. 10 m" (freshness line, about
       section, `sensor_height_m_approx` in latest.json) — confirm the exact
       height with Steffen and update if needed.
