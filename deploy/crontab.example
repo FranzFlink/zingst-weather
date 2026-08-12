@@ -1,0 +1,4 @@
+# Zingst weather dashboard — data refresh every 5 minutes.
+# Install with:  crontab -e   and paste the line below.
+# (Runs only under your user; nothing system-wide is touched.)
+*/5 * * * * /projekt_agmwend/home_rad/Joshua/zingst-weather/deploy/update.sh

@@ -1,0 +1,9 @@
+# runtime artifacts
+logs/
+.update.lock
+preview.html
+__pycache__/
+*.pyc
+
+# vendor manuals (copyrighted, not for the public repo)
+*.pdf

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Aktuelle Wind- und Wetterdaten vom meteorologischen Messfeld Zingst – Leipziger Institut für Meteorologie, Universität Leipzig.">
+<meta name="theme-color" content="#eef5f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1519" media="(prefers-color-scheme: dark)">
+<title>Wetter Zingst · LIM / Universität Leipzig</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="15" fill="%23dcebf5"/><path d="M6 14h13a3.4 3.4 0 1 0-3.2-4.6M6 19h17a3.4 3.4 0 1 1-3.2 4.6" fill="none" stroke="%232a78d6" stroke-width="2.4" stroke-linecap="round"/></svg>'>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#main" data-i18n="skip">Zum Inhalt springen</a>
+
+<header class="site-head">
+  <div class="brand">
+    <a href="https://www.physes.uni-leipzig.de/institut-fuer-meteorologie" target="_blank" rel="noopener" class="brand-link" aria-label="Leipziger Institut für Meteorologie">
+      <img class="brand-logo" src="assets/logo-lim.png" alt="Logo Leipziger Institut für Meteorologie">
+    </a>
+    <div class="brand-text">
+      <h1>Wetter Zingst</h1>
+      <p class="tagline" data-i18n="tagline">Live vom Messfeld · Leipziger Institut für Meteorologie</p>
+    </div>
+  </div>
+  <button id="langBtn" class="lang-btn" type="button" aria-label="Switch to English">EN</button>
+</header>
+
+<div id="staleBanner" class="stale-banner" hidden>
+  <span aria-hidden="true">⚠️</span> <span id="staleText"></span>
+</div>
+
+<main id="main">
+
+  <!-- ============ hero: current wind ============ -->
+  <section class="card hero" aria-labelledby="heroTitle">
+    <h2 id="heroTitle" class="card-title" data-i18n="wind_now">Wind jetzt</h2>
+
+    <div class="hero-body">
+      <div class="compass-wrap">
+        <svg id="compass" viewBox="0 0 160 160" role="img" aria-labelledby="compassLabel">
+          <title id="compassLabel">Windrichtung</title>
+          <circle cx="80" cy="80" r="74" class="compass-face"/>
+          <g id="compassTicks" class="compass-ticks"></g>
+          <text x="80"  y="26"  class="compass-card" id="cardN">N</text>
+          <text x="138" y="85"  class="compass-card" id="cardE">O</text>
+          <text x="80"  y="144" class="compass-card" id="cardS">S</text>
+          <text x="22"  y="85"  class="compass-card" id="cardW">W</text>
+          <g id="windArrow" class="wind-arrow">
+            <path d="M80 34 L92 76 L80 68 L68 76 Z"/>
+            <path d="M80 68 L80 118" stroke-linecap="round"/>
+          </g>
+          <circle cx="80" cy="80" r="5" class="compass-hub"/>
+        </svg>
+        <p class="compass-reading"><span id="dirCardinal">–</span> · <span id="dirDeg">–°</span></p>
+      </div>
+
+      <div class="hero-main">
+        <p class="hero-value">
+          <span id="windValue">–</span><span class="hero-unit" id="windUnitLabel">kn</span>
+        </p>
+        <p class="hero-gust"><span data-i18n="gusts_upto">Böen bis</span> <strong id="gustValue">–</strong></p>
+
+        <div class="unit-seg" role="group" aria-label="Einheit">
+          <button type="button" data-unit="kmh" class="active">km/h</button>
+          <button type="button" data-unit="kn">kn</button>
+          <button type="button" data-unit="ms">m/s</button>
+        </div>
+
+        <div class="hero-badges">
+          <span class="chip chip-bft" id="bftChip">– Bft</span>
+          <span class="chip" id="shoreChip" hidden></span>
+        </div>
+      </div>
+    </div>
+    <p class="freshness" id="freshness"></p>
+  </section>
+
+  <!-- ============ tiles ============ -->
+  <section class="tiles" aria-label="Messwerte">
+    <div class="card tile">
+      <p class="tile-label" data-i18n="tile_gust">Böen</p>
+      <p class="tile-value"><span id="tileGust">–</span></p>
+      <p class="tile-sub" data-i18n="tile_gust_sub">3-Sekunden-Maximum, letzte 10 min</p>
+    </div>
+    <div class="card tile">
+      <p class="tile-label" data-i18n="tile_temp">Temperatur</p>
+      <p class="tile-value"><span id="tileTemp">–</span><span class="tile-unit"> °C</span></p>
+      <p class="tile-sub" data-i18n="tile_temp_sub">akustisch gemessen (virtuell)</p>
+    </div>
+    <div class="card tile">
+      <p class="tile-label" data-i18n="tile_max">Max. Böe heute</p>
+      <p class="tile-value"><span id="tileMax">–</span></p>
+      <p class="tile-sub" id="tileMaxSub">–</p>
+    </div>
+    <div class="card tile">
+      <p class="tile-label" data-i18n="tile_trend">Tendenz</p>
+      <p class="tile-value tile-trend"><span id="tileTrendArrow" aria-hidden="true">→</span></p>
+      <p class="tile-sub" id="tileTrendText">–</p>
+    </div>
+  </section>
+
+  <!-- ============ history chart ============ -->
+  <section class="card chart-card" aria-labelledby="chartTitle">
+    <div class="chart-head">
+      <h2 id="chartTitle" class="card-title" data-i18n="history">Verlauf</h2>
+      <div class="unit-seg range-seg" role="group" aria-label="Zeitraum">
+        <button type="button" data-range="12">12 h</button>
+        <button type="button" data-range="24" class="active">24 h</button>
+        <button type="button" data-range="48">48 h</button>
+      </div>
+    </div>
+
+    <div class="legend" aria-hidden="true">
+      <span class="legend-item"><span class="legend-key key-wind"></span><span data-i18n="legend_wind">Wind (10-min-Mittel)</span></span>
+      <span class="legend-item"><span class="legend-key key-peak"></span><span data-i18n="legend_peak">Böen (1-min-Spitze)</span></span>
+    </div>
+
+    <div class="chart-wrap" id="chartWrap">
+      <svg id="chart" role="img" aria-label="Windverlauf"></svg>
+      <div class="tooltip" id="tooltip" hidden></div>
+    </div>
+    <div class="dir-strip" id="dirStrip" aria-hidden="true"></div>
+
+    <details class="table-details">
+      <summary data-i18n="table_toggle">Daten als Tabelle</summary>
+      <div class="table-scroll">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th data-i18n="th_time">Zeit</th>
+              <th data-i18n="th_wind">Wind</th>
+              <th data-i18n="th_peak">Spitze</th>
+              <th data-i18n="th_dir">Richtung</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ about / safety ============ -->
+  <section class="card about" aria-labelledby="aboutTitle">
+    <h2 id="aboutTitle" class="card-title" data-i18n="about_title">Über die Station</h2>
+    <p data-i18n="about_text">
+      Die Daten stammen vom meteorologischen Messfeld Zingst des Leipziger Instituts für
+      Meteorologie (Universität Leipzig), direkt an der Ostseeküste. Wind wird mit einem
+      Ultraschall-Anemometer in rund 10 m Höhe gemessen und minütlich aktualisiert.
+    </p>
+
+    <div class="map-sketch">
+      <svg viewBox="0 0 640 250" role="img" aria-label="Skizze: Lage des Messturms am Strandübergang 13">
+        <!-- sea -->
+        <rect x="0" y="0" width="640" height="96" rx="0" class="map-sea"/>
+        <path d="M20 36 q14 -9 28 0 t28 0 t28 0" class="map-wave"/>
+        <path d="M330 22 q14 -9 28 0 t28 0" class="map-wave"/>
+        <path d="M480 50 q14 -9 28 0 t28 0 t28 0" class="map-wave"/>
+        <path d="M130 66 q14 -9 28 0 t28 0" class="map-wave"/>
+        <text x="24" y="88" class="map-label map-label-sea" data-i18n="map_sea">Ostsee</text>
+        <!-- beach -->
+        <rect x="0" y="96" width="640" height="74" class="map-sand"/>
+        <text x="24" y="140" class="map-label" data-i18n="map_beach">Strand</text>
+        <!-- dune / land -->
+        <rect x="0" y="170" width="640" height="80" class="map-grass"/>
+        <path d="M0 170 H640" class="map-dune"/>
+        <!-- beach crossings -->
+        <path d="M140 226 V128" class="map-path"/>
+        <path d="M330 226 V128" class="map-path"/>
+        <path d="M520 226 V128" class="map-path"/>
+        <text x="140" y="243" class="map-label map-label-mid">12</text>
+        <text x="330" y="243" class="map-label map-label-mid">13</text>
+        <text x="520" y="243" class="map-label map-label-mid">14</text>
+        <!-- road -->
+        <path d="M0 226 H640" class="map-road"/>
+        <text x="600" y="220" class="map-label" text-anchor="end">Seestraße</text>
+        <!-- tower marker at crossing 13 -->
+        <circle cx="360" cy="140" r="16" class="map-ping"/>
+        <g class="map-tower">
+          <path d="M360 116 l-7 32 h14 z"/>
+          <path d="M353 138 h14 M355 130 h10"/>
+          <path d="M360 116 v-8 M352 110 h16"/>
+          <circle cx="352" cy="110" r="2.4"/>
+          <circle cx="368" cy="110" r="2.4"/>
+        </g>
+        <text x="382" y="126" class="map-label map-label-tower" data-i18n="map_tower">Messturm</text>
+        <!-- north arrow -->
+        <g class="map-north">
+          <circle cx="602" cy="34" r="17"/>
+          <path d="M602 44 V26 m0 0 l-5 7 m5 -7 l5 7"/>
+          <text x="602" y="66" class="map-label map-label-mid">N</text>
+        </g>
+      </svg>
+      <p class="map-caption">
+        <span aria-hidden="true">📍</span>
+        <span data-i18n="map_caption">Der Messturm steht in den Dünen am Strandübergang 13</span> ·
+        54,4416°&nbsp;N, 12,7041°&nbsp;O ·
+        <a href="https://www.openstreetmap.org/?mlat=54.44155&amp;mlon=12.70408#map=17/54.44155/12.70408"
+           target="_blank" rel="noopener" data-i18n="map_open">Karte öffnen</a>
+      </p>
+    </div>
+
+    <p class="safety-note">
+      <span aria-hidden="true">🌊</span>
+      <span data-i18n="safety_text">Bei ablandigem Wind (aus Süd) treiben SUP-Boards und
+      Luftmatratzen aufs offene Meer – bitte besonders vorsichtig sein.</span>
+    </p>
+    <p class="coming-soon" data-i18n="coming_soon">
+      Luftdruck, Regen und Sonnenstrahlung folgen in Kürze.
+    </p>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="foot-logos">
+    <a href="https://www.physes.uni-leipzig.de/institut-fuer-meteorologie" target="_blank" rel="noopener" aria-label="Leipziger Institut für Meteorologie">
+      <img src="assets/logo-lim.png" alt="Leipziger Institut für Meteorologie">
+    </a>
+    <a href="https://www.uni-leipzig.de/" target="_blank" rel="noopener" aria-label="Universität Leipzig">
+      <img src="assets/logo-uni-leipzig.png" alt="Universität Leipzig">
+    </a>
+  </div>
+  <p class="foot-line" data-i18n="foot_operator">
+    Meteorologisches Messfeld Zingst · Leipziger Institut für Meteorologie · Universität Leipzig
+  </p>
+  <p class="foot-line foot-muted" data-i18n="disclaimer">
+    Alle Angaben ohne Gewähr. Die Daten sind Rohdaten einer Forschungsstation und ersetzen
+    keine amtlichen Warnungen.
+  </p>
+  <p class="foot-line">
+    <a href="impressum.html" data-i18n="imprint">Impressum &amp; Datenschutz</a> ·
+    <a href="mailto:joshua.mueller@uni-leipzig.de"><span data-i18n="contact">Kontakt</span>: joshua.mueller@uni-leipzig.de</a>
+  </p>
+  <p class="foot-line foot-muted"><span data-i18n="updated">Stand</span>: <span id="updatedAt">–</span></p>
+</footer>
+
+<script src="js/app.js"></script>
+</body>
+</html>

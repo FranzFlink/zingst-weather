@@ -1,0 +1,472 @@
+/* ==========================================================================
+   Wetter Zingst — pastel coastal theme, mobile-first, no dependencies
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* surfaces & ink */
+  --bg-top: #eef5f9;          /* pale sky */
+  --bg-bottom: #f8f3e9;       /* warm sand */
+  --card: #fefefd;
+  --ink: #22303a;
+  --ink-2: #5c6d78;
+  --muted: #8b9299;
+  --hairline: #e4e4dc;
+  --baseline: #c6c8c2;
+
+  /* pastel accents */
+  --sky: #dcebf5;
+  --mint: #d9efe4;
+  --sand: #f4ead4;
+  --coral: #f9ddd0;
+
+  /* chart series (validated, see dataviz palette) */
+  --s1: #2a78d6;              /* wind mean */
+  --s2: #eb6834;              /* gust peaks */
+
+  /* status (icon + label always accompany color) */
+  --warning: #fab219;
+  --warning-bg: #fdf3d7;
+  --good: #0ca30c;
+
+  --radius: 18px;
+  --shadow: 0 1px 2px rgba(34, 48, 58, 0.05), 0 6px 22px rgba(34, 48, 58, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg-top: #0f1519;
+    --bg-bottom: #131519;
+    --card: #1a2228;
+    --ink: #eef3f6;
+    --ink-2: #b8c3ca;
+    --muted: #8b9299;
+    --hairline: #2b343a;
+    --baseline: #3a444b;
+
+    --sky: #21323e;
+    --mint: #1e332a;
+    --sand: #33301f;
+    --coral: #3a2a22;
+
+    --s1: #3987e5;
+    --s2: #d95926;
+
+    --warning: #fab219;
+    --warning-bg: #33290e;
+
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 22px rgba(0, 0, 0, 0.25);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  background: var(--bg-top);
+  min-height: 100vh;
+  line-height: 1.5;
+  padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+           max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+
+/* fixed gradient layer (background-attachment: fixed breaks on iOS Safari) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+}
+
+main {
+  max-width: 980px;
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 8px;
+  background: var(--card);
+  color: var(--ink);
+  padding: 8px 14px;
+  border-radius: 10px;
+  z-index: 10;
+}
+.skip-link:focus { left: 8px; }
+
+/* ---------------- header ---------------- */
+
+.site-head {
+  max-width: 980px;
+  margin: 4px auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand-link { flex: none; display: flex; }
+.brand-logo { height: 52px; width: auto; }
+.brand-text h1 {
+  margin: 0;
+  font-size: clamp(1.25rem, 4.5vw, 1.6rem);
+  letter-spacing: -0.01em;
+}
+.tagline {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--ink-2);
+}
+
+.lang-btn {
+  flex: none;
+  min-width: 44px;
+  min-height: 36px;
+  border: 1px solid var(--hairline);
+  background: var(--card);
+  color: var(--ink-2);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.lang-btn:hover { color: var(--ink); }
+
+/* ---------------- stale banner ---------------- */
+
+.stale-banner {
+  max-width: 980px;
+  margin: 0 auto 16px;
+  background: var(--warning-bg);
+  border: 1px solid var(--warning);
+  color: var(--ink);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+}
+
+/* ---------------- cards ---------------- */
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+.card-title {
+  margin: 0 0 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+}
+
+/* ---------------- hero ---------------- */
+
+.hero-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 32px;
+}
+
+.compass-wrap { text-align: center; margin-inline: auto; }
+#compass { width: min(180px, 46vw); height: auto; display: block; margin-inline: auto; }
+
+.compass-face { fill: var(--sky); }
+.compass-ticks line { stroke: var(--baseline); stroke-width: 1.5; }
+.compass-card {
+  font: 600 13px system-ui, sans-serif;
+  fill: var(--ink-2);
+  text-anchor: middle;
+}
+.wind-arrow path { fill: var(--s1); stroke: var(--s1); stroke-width: 5; }
+.wind-arrow { transition: transform 0.8s ease; transform-origin: 80px 80px; }
+.compass-hub { fill: var(--card); stroke: var(--s1); stroke-width: 3; }
+.compass-reading { margin: 6px 0 0; font-weight: 600; color: var(--ink-2); }
+
+.hero-main { flex: 1 1 260px; }
+
+.hero-value {
+  margin: 0;
+  font-size: clamp(3.2rem, 13vw, 4.5rem);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.hero-unit {
+  font-size: 0.35em;
+  font-weight: 600;
+  color: var(--ink-2);
+  margin-left: 0.25em;
+}
+.hero-gust { margin: 2px 0 14px; color: var(--ink-2); }
+.hero-gust strong { color: var(--ink); font-weight: 650; }
+
+/* segmented control (units, ranges) */
+.unit-seg {
+  display: inline-flex;
+  background: var(--sky);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+}
+.unit-seg button {
+  border: 0;
+  background: transparent;
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  min-height: 36px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.unit-seg button.active {
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(34, 48, 58, 0.15);
+}
+
+.hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--mint);
+  color: var(--ink);
+}
+.chip-bft { background: var(--sand); }
+.chip-onshore { background: var(--mint); }
+.chip-cross { background: var(--sky); }
+.chip-offshore { background: var(--warning-bg); border: 1px solid var(--warning); }
+
+.freshness { margin: 14px 0 0; font-size: 0.8rem; color: var(--muted); }
+
+/* ---------------- tiles ---------------- */
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (min-width: 700px) { .tiles { grid-template-columns: repeat(4, 1fr); } }
+
+.tile { padding: 16px; }
+.tile-label {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-2);
+}
+.tile-value {
+  margin: 6px 0 2px;
+  font-size: 1.7rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+.tile-unit { font-size: 0.65em; font-weight: 600; color: var(--ink-2); }
+.tile-sub { margin: 0; font-size: 0.75rem; color: var(--muted); }
+.tile-trend { font-size: 2rem; line-height: 1.2; }
+
+/* ---------------- chart ---------------- */
+
+.chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.chart-head .card-title { margin: 0; }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 0.8rem;
+  color: var(--ink-2);
+  margin-bottom: 6px;
+}
+.legend-item { display: inline-flex; align-items: center; gap: 7px; }
+.legend-key { width: 18px; height: 0; border-top: 2.5px solid; border-radius: 2px; }
+.key-wind { border-color: var(--s1); }
+.key-peak { border-color: var(--s2); }
+
+.chart-wrap { position: relative; }
+#chart { display: block; width: 100%; height: auto; touch-action: pan-y; }
+.chart-wrap.loading { opacity: 0.6; }
+
+.grid-line { stroke: var(--hairline); stroke-width: 1; }
+.axis-line { stroke: var(--baseline); stroke-width: 1; }
+.axis-text { font: 11px system-ui, sans-serif; fill: var(--muted); font-variant-numeric: tabular-nums; }
+
+.series-wind { stroke: var(--s1); stroke-width: 2; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.series-peak { stroke: var(--s2); stroke-width: 2; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.area-wind { fill: var(--s1); opacity: 0.1; }
+.end-dot { stroke: var(--card); stroke-width: 2; }
+.end-dot-wind { fill: var(--s1); }
+.end-dot-peak { fill: var(--s2); }
+
+.crosshair { stroke: var(--baseline); stroke-width: 1; }
+.hover-dot { stroke: var(--card); stroke-width: 2; }
+
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--card);
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  min-width: 130px;
+  z-index: 5;
+}
+.tooltip .tt-time { color: var(--ink-2); margin-bottom: 4px; font-weight: 600; }
+.tooltip .tt-row { display: flex; align-items: center; gap: 7px; }
+.tooltip .tt-key { width: 12px; height: 0; border-top: 2.5px solid; border-radius: 2px; flex: none; }
+.tooltip .tt-val { font-weight: 650; font-variant-numeric: tabular-nums; }
+.tooltip .tt-name { color: var(--ink-2); }
+
+.dir-strip {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 14px 0 34px;   /* aligned with plot area (chart paddings) */
+  color: var(--muted);
+}
+.dir-strip span { font-size: 17px; line-height: 1; }
+
+/* table view */
+.table-details { margin-top: 14px; font-size: 0.85rem; }
+.table-details summary {
+  cursor: pointer;
+  color: var(--ink-2);
+  font-weight: 600;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+}
+.table-scroll { max-height: 320px; overflow: auto; margin-top: 8px; border: 1px solid var(--hairline); border-radius: 10px; }
+#dataTable { width: 100%; border-collapse: collapse; }
+#dataTable th, #dataTable td {
+  text-align: left;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--hairline);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+#dataTable th {
+  position: sticky;
+  top: 0;
+  background: var(--card);
+  color: var(--ink-2);
+  font-weight: 600;
+}
+
+/* ---------------- about / footer ---------------- */
+
+.about p { margin: 8px 0; font-size: 0.92rem; color: var(--ink-2); }
+/* location sketch */
+.map-sketch { margin: 14px 0 4px; }
+.map-sketch svg { display: block; width: 100%; height: auto; border-radius: 14px; }
+.map-sea { fill: var(--sky); }
+.map-wave { fill: none; stroke: var(--s1); stroke-width: 1.6; opacity: 0.35; stroke-linecap: round; }
+.map-sand { fill: var(--sand); }
+.map-grass { fill: var(--mint); }
+.map-dune { stroke: var(--baseline); stroke-width: 2; stroke-dasharray: 1 7; stroke-linecap: round; fill: none; }
+.map-path { stroke: var(--muted); stroke-width: 3; stroke-dasharray: 6 5; opacity: 0.5; fill: none; }
+.map-road { stroke: var(--baseline); stroke-width: 4; fill: none; }
+.map-label { font: 12px system-ui, sans-serif; fill: var(--ink-2); }
+.map-label-mid { text-anchor: middle; }
+.map-label-tower { font-weight: 650; fill: var(--ink); }
+.map-tower path { stroke: var(--ink); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.map-tower circle { fill: var(--ink); }
+.map-north circle { fill: var(--card); stroke: var(--baseline); }
+.map-north path { stroke: var(--ink-2); stroke-width: 2; fill: none; stroke-linecap: round; }
+.map-ping {
+  fill: var(--s2);
+  opacity: 0.25;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: map-ping 2.6s ease-out infinite;
+}
+@keyframes map-ping {
+  0% { transform: scale(0.55); opacity: 0.45; }
+  75% { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-ping { animation: none; opacity: 0.2; }
+}
+.map-caption { font-size: 0.8rem !important; color: var(--muted) !important; }
+.map-caption a { color: var(--ink-2); text-underline-offset: 3px; }
+
+.safety-note {
+  background: var(--sky);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: var(--ink) !important;
+}
+.coming-soon { font-size: 0.8rem !important; color: var(--muted) !important; }
+
+.site-foot {
+  max-width: 980px;
+  margin: 28px auto 8px;
+  text-align: center;
+  color: var(--ink-2);
+}
+.foot-logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 12px;
+}
+.foot-logos img { height: 44px; width: auto; opacity: 0.9; }
+.foot-line { margin: 4px 0; font-size: 0.82rem; }
+.foot-line a { color: var(--ink-2); text-decoration-color: var(--baseline); text-underline-offset: 3px; }
+.foot-line a:hover { color: var(--ink); }
+.foot-muted { color: var(--muted); font-size: 0.75rem; }
+
+/* the logos are dark line art -> give them a light chip on dark surfaces */
+@media (prefers-color-scheme: dark) {
+  .brand-logo, .foot-logos img {
+    background: #f4f6f8;
+    border-radius: 10px;
+    padding: 5px 7px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wind-arrow { transition: none; }
+}
