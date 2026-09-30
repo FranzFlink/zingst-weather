@@ -88,7 +88,7 @@ copyrighted and don't belong in a public repo.
       (sea due north). Adjust if the beach section of interest faces differently.
 - [ ] Institute sign-off for public hosting.
 
-## Data formats (from Steffen's mail)
+## Data format
 
 - Wind: Thies 2D ultrasonic anemometer, "Wissenschaftliches Telegramm" 12,
   `;`-separated: `WG;WR;VT;VY;VX;T13;T24;C31;C42;C13;C24;PA;INTER;AV[;STh;STgen;LC];timestamp`.
